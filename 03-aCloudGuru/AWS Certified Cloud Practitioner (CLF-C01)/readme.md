@@ -13,4 +13,5 @@ Security best practices and compliance in the AWS Cloud
 The cloud costs, economics, and billing practices of the AWS Cloud
 By the end of this course, you'll understand AWS services and how they are leveraged to build applications and provide products and services in the real world. Join your instructor, Kesha Williams, and prepare to become an AWS Certified Cloud Practitioner!
 
+
 [Certificate](https://drive.google.com/file/d/1Xw3aNPmCfhOm9eOvRv03CODlgpkPADxJ/view?usp=sharing)
