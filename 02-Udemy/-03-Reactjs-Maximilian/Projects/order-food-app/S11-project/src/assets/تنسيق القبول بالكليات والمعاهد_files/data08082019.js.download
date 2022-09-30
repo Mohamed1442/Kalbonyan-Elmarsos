@@ -1,0 +1,332 @@
+﻿var UniversityIds;
+
+function InvertUniversityCodes(DataDoc) {
+
+
+    UniversityIds = Array(DataDoc.getElementById("Universities").getAttribute("length"));
+    var i;
+    for (i = eval(DataDoc.getElementById("Universities").getAttribute("length")) - 1; i > -1; i--) {
+        try {
+
+            UniversityIds[DataDoc.getElementById("Universities" + i).getAttribute("Code")] = i;
+        } catch (err) {
+            console.log(err)
+        }
+    }
+}
+
+
+
+
+function ConformingRank(Faculty, BasicData, DataDoc) {
+    var _StudentRank = eval(BasicData.getAttribute("Rank"))
+    var _FacultyRank = eval(Faculty.getAttribute("R"))
+    if (_StudentRank == _FacultyRank) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function NotInExceptions(Faculty, BasicData) {
+    if (Faculty.getAttribute("E") != null) {
+
+        var ExceptionsArray = Faculty.getAttribute("E").split('|')
+
+        for (i = 0; i < ExceptionsArray.length - 1; i++) {
+            var ExceptionFeatures = ExceptionsArray[i].split(',');
+            var Z = CheckZoneConformance(BasicData.getAttribute("ZoneCode"), "," + ExceptionFeatures[0] + ",")
+            var D = CheckDepartmentConformance(BasicData.getAttribute("Department"), BasicData.getAttribute("ZoneCode"), "," + ExceptionFeatures[1] + ",")
+            var S = CheckSubjectSetConformance(BasicData.getAttribute("Subjectsets"), "," + ExceptionFeatures[2] + ",")
+            var G = CheckGenderConformance(BasicData.getAttribute("GenderCode"), ExceptionFeatures[3])
+            if (Z && D && S && G)
+                return false;
+        }
+    }
+    return true;
+}
+
+function ConformingZDSSet(Faculty, BasicData, DataDoc) {
+    if (CheckDepartmentConformance(BasicData.getAttribute("Department"), BasicData.getAttribute("ZoneCode"), Faculty.getAttribute("D")) &&
+        CheckGenderConformance(BasicData.getAttribute("GenderCode"), Faculty.getAttribute("GC")) &&
+        CheckZoneConformance(BasicData.getAttribute("ZoneCode"), Faculty.getAttribute("Z")))
+        return true
+    if (eval(getParameterByName("Certificate") == 4)) { //Azhar & Swiching Scenario 
+        var url = window.parent.frames[2].document.getElementById("studentChoices").getAttribute("value");
+        var Police = BasicData.getAttribute("Police")
+        if (url != "")
+            Police = eval(url.substr(url.indexOf("&em=") + 4, 1))
+        if (Faculty.getAttribute("Z").indexOf(Police) >= 0)
+            return true
+    }
+    return false
+
+}
+
+function CheckSubjectSetConformance(StudentSubjectSet, FacultySubjectSets) {
+
+    var SeatNumber = parseInt(BasicData.getAttribute("SeatNumber"))
+
+    var _SubjectSet = eval(BasicData.getAttribute("Rank").substring(0, 1)) * 1000
+    var _Branch = eval(BasicData.getAttribute("Rank").substring(0, 2)) * 100
+    if (FacultySubjectSets.indexOf(_SubjectSet) >= 0 || FacultySubjectSets.indexOf(_Branch) >= 0 || FacultySubjectSets.indexOf(BasicData.getAttribute("Rank")) >= 0) {
+        return true;
+    } else {
+        return false;
+    }
+
+
+}
+
+function CheckGenderConformance(StudentGender, FacultyGender) {
+    if (FacultyGender == "" | FacultyGender == "0" | FacultyGender.indexOf(StudentGender) >= 0)
+        return true;
+    return false;
+}
+
+function CheckZoneConformance(StudentZoneCode, FacultyZones) {
+    if (FacultyZones == "" | FacultyZones == ",0," | FacultyZones.indexOf("," + StudentZoneCode + ",") >= 0) {
+        return true;
+    }
+    return false;
+}
+
+function CheckDepartmentConformance(StudentDepartment, StudentZone, FacultyDepartments) {
+
+    if (FacultyDepartments == ",0," | FacultyDepartments.indexOf("," + StudentZone + ",") >= 0 | FacultyDepartments.indexOf("," + StudentDepartment + ",") >= 0)
+        return true;
+    return false;
+}
+
+function PrepareData(DataDoc, BasicData) {
+
+    InvertUniversityCodes(DataDoc)
+
+    var i, j
+    var error = ""
+
+    for (i = 0; i < 100; i++) {
+
+        if (DataDoc.getElementById("Specializations" + i) != null) {
+            DataDoc.getElementById("Specializations" + i).setAttribute("Faculties", ",")
+            DataDoc.getElementById("Specializations" + i).setAttribute("Specialization", ",")
+        }
+        if (DataDoc.getElementById("Universities" + i) != null) {
+            DataDoc.getElementById("Universities" + i).setAttribute("Faculties", ",")
+            DataDoc.getElementById("Universities" + i).setAttribute("Faculty", ",")
+        }
+    }
+
+
+
+    var UnivOrderArray = new Array();
+    var FacExceptionsArray = new Array();
+
+    UnivOrderArray = BasicData.getAttribute("RulesData").split("#")[2].split(',')
+    DeptExceptionsArray = BasicData.getAttribute("RulesData").split("#")[3].split(';')
+
+
+    for (i = 0; i < UnivOrderArray.length; i++) {
+        if (UnivOrderArray[i].length > 0) {
+            if (DataDoc.getElementById("Universities" + UniversityIds[Number(UnivOrderArray[i])]).getAttribute("Name").indexOf("(") < 0) {
+                if (UnivOrderArray[i].indexOf("0") == 0) {
+                    DataDoc.getElementById("Universities" + UniversityIds[Number(UnivOrderArray[i])]).setAttribute("Name", "(أ)" + DataDoc.getElementById("Universities" + UniversityIds[Number(UnivOrderArray[i])]).getAttribute("Name"))
+                } else {
+                    DataDoc.getElementById("Universities" + UniversityIds[Number(UnivOrderArray[i])]).setAttribute("Name", "(ب)" + DataDoc.getElementById("Universities" + UniversityIds[Number(UnivOrderArray[i])]).getAttribute("Name"))
+                }
+            }
+        }
+    }
+
+
+
+
+    for (i = 0; i < 2020; i++) {
+        //if (i==289)
+        //	alert('')
+        var Faculty = DataDoc.getElementById("Faculties" + i)
+        if (Faculty) {
+
+            /**Setting New Attributes**/
+            Faculty.setAttribute("Code", i)
+            Faculty.setAttribute("Order", -1)
+            /** Setting missing XML attributes**/
+            if (Faculty.getAttribute("D") == null)
+                Faculty.setAttribute("D", ",0,");
+            if (Faculty.getAttribute("Z") == null)
+                Faculty.setAttribute("Z", ",0,");
+            if (Faculty.getAttribute("GC") == null)
+                Faculty.setAttribute("GC", "0");
+            if (Faculty.getAttribute("L") == null)
+                Faculty.setAttribute("L", "0");
+            if (Faculty.getAttribute("C") == null)
+                Faculty.setAttribute("C", "0");
+            if (Faculty.getAttribute("DT") == null)
+                Faculty.setAttribute("DT", "0");
+            if (Faculty.getAttribute("E") == null)
+                Faculty.setAttribute("E", "");
+            if (Faculty.getAttribute("N") == null)
+                Faculty.setAttribute("N", "");
+			if (Faculty.getAttribute("SG") == null)
+                Faculty.setAttribute("SG", "1");
+            if (CurrentStudentService() == "Transfer" && i != 2000) {
+                var DTofSpec;
+                DTofSpec = 1;
+                try {
+                    DTofSpec = DataDoc.getElementById("Specializations" + Faculty.getAttribute("SC")).getAttribute("DistributionType");
+                } catch (err) {
+                    console.log("Specialization : " + Faculty.getAttribute("SC") + " not found in Specializations.xml");
+                    console.log(err.message);
+
+                }
+
+                switch (parseInt(DTofSpec)) {
+                    case 0:
+                        Faculty.setAttribute("DT", "0");
+                        break;
+                    case 1:
+                        Faculty.setAttribute("DT", "1");
+                        break;
+                    case 2:
+                        Faculty.setAttribute("DT", "2");
+                        break;
+                    default:
+                        Faculty.setAttribute("DT", "2");
+                        break;
+                }
+
+                if (DataDoc.getElementById("Faculties" + BasicData.getAttribute("CurrentAcceptedFaculty")) == null) {
+                    alert("الكلية التي تم قبولك بها غير محملة علي الموقع - اتصل بالدعم الفني 19468")
+                    window.top.location.href = "https://tansik.egypt.gov.eg"
+                }
+
+                if ((",90,240,351,352,484,644,792,860,935,1163,").indexOf("," + i + ",") >= 0)
+                    Faculty.setAttribute("DT", "1"); //Geographize Rare Faculties
+
+                if (DataDoc.getElementById("Faculties" + BasicData.getAttribute("CurrentAcceptedFaculty")).getAttribute("SC") == Faculty.getAttribute("SC"))
+                    if (Faculty.getAttribute("Code") == parseInt(BasicData.getAttribute("CurrentAcceptedFaculty"), 10) || ("," + BasicData.getAttribute("RulesData").split("#")[5] + ",").indexOf("," + Faculty.getAttribute("Code") + ",") > 0)
+                        Faculty.setAttribute("L", 4010);
+                    else {
+                        if (DataDoc.getElementById("Specializations" + Faculty.getAttribute("SC")).getAttribute("InstitutionType") == 1)
+                            Faculty.setAttribute("L", 0);
+
+                    }
+            }
+            if ((BasicData.getAttribute("Type") == -1) && CurrentStudentService() != "Transfer") //disable Zone rules for Elite Students 
+            {
+                DataDoc.getElementById("Faculties" + Faculty.getAttribute("Code")).setAttribute("DT", 0)
+                DataDoc.getElementById("Faculties" + Faculty.getAttribute("Code")).setAttribute("D", ',0,')
+                DataDoc.getElementById("Faculties" + Faculty.getAttribute("Code")).setAttribute("Z", ',0,')
+            }
+
+            if (Faculty.getAttribute("DT") == 1) {
+                Faculty.setAttribute("Order", 1000)
+
+                for (k = 0; k < UnivOrderArray.length; k++) {
+                    if (Faculty.getAttribute("UC") == Number(UnivOrderArray[k])) {
+
+                        if (Faculty.getAttribute("UC").length == UnivOrderArray[k].length) {
+                            Faculty.setAttribute("Order", k + 1);
+                            break;
+                        } else {
+                            Faculty.setAttribute("Order", 0);
+                            break;
+                        }
+                    }
+                }
+
+                for (k = 0; k < DeptExceptionsArray.length; k++) {
+                    if ((DeptExceptionsArray[k]).indexOf("," + Faculty.getAttribute("Code") + ",") >= 0) {
+                        if (k == 0)
+                            Faculty.setAttribute("Order", 0);
+                        if (k == 1)
+                            Faculty.setAttribute("Order", 1);
+                        if (k == 2) { //group gem
+                            Faculty.setAttribute("Order", 1000);
+                            Faculty.setAttribute("DT", 1);
+                        }
+                        break;
+                    }
+                }
+
+            }
+
+
+
+            //معهد فني تجاري ومعهد فني صناعي يوزع بالمحافظة
+            //if (Faculty.getAttribute("DT")==1 && (",46,56,57,62,69,".indexOf(","+Faculty.getAttribute("SC")+",") >=0))
+            //* a new added conditions for geographic distribution of paid institutes
+            if (Faculty.getAttribute("DT") == 1 && (",32,38,42,44,46,48,55,56,57,58,60,62,66,68,69,70,78,81,92,93,94,98,".indexOf("," + Faculty.getAttribute("SC") + ",") >= 0)) { //govs
+                if (Faculty.getAttribute("LC") == BasicData.getAttribute("ZoneCode")) {
+                    Faculty.setAttribute("Order", 0);
+                }
+                //great cairo
+                if ((Faculty.getAttribute("LC") == 21 && BasicData.getAttribute("ZoneCode") == 1) | (Faculty.getAttribute("LC") == 1 && BasicData.getAttribute("ZoneCode") == 21)) {
+                    Faculty.setAttribute("Order", 0);
+                }
+                //get institutes into great Cairo  10th Ramadan to Sharkia
+                if ((",286,867,868,".indexOf("," + Faculty.getAttribute("Code") + ",") >= 0) && BasicData.getAttribute("ZoneCode") == 13) {
+                    Faculty.setAttribute("Order", 0);
+                }
+                // //get institutes into great Cairo    Elshorouk to Obour and khosos
+                if ((",274,275,276,816,865,".indexOf("," + Faculty.getAttribute("Code") + ",") >= 0) && (BasicData.getAttribute("Department") == 710 || BasicData.getAttribute("Department") == 711)) {
+                    Faculty.setAttribute("Order", 0);
+                }
+
+                /*switch(eval(Faculty.getAttribute("SC"))){
+                    case 62:
+                        Faculty.setAttribute("UC", "19");
+                        break;
+                    case 56:
+                        Faculty.setAttribute("UC", "18");
+                        break;
+                    case 69:
+                        Faculty.setAttribute("UC", "191");
+                        break;
+
+                }*/
+
+            }
+
+            if (Faculty.getAttribute("DT") == 2) {
+                Faculty.setAttribute("Order", 1000)
+                if (",1,21,".indexOf("," + Faculty.getAttribute("LC") + ",") >= 0 && ",1,21,".indexOf("," + BasicData.getAttribute("ZoneCode") + ",") >= 0) {
+                    Faculty.setAttribute("Order", 0);
+                }
+
+                if (Faculty.getAttribute("LC") == BasicData.getAttribute("ZoneCode")) {
+                    Faculty.setAttribute("Order", 0);
+                }
+                //..
+                if (ConformingZDSSet(Faculty, BasicData, DataDoc)) {
+                    Faculty.setAttribute("Order", 0);
+                }
+
+            }
+
+            if (CanFacultyBeShown(Faculty, BasicData) && ConformingRank(Faculty, BasicData, DataDoc) && ConformingZDSSet(Faculty, BasicData, DataDoc) && NotInExceptions(Faculty, BasicData)) {
+
+                var Specialization = DataDoc.getElementById("Specializations" + Faculty.getAttribute("SC"));
+                if (Specialization) {
+                    Faculty.setAttribute("Specialization", Specialization)
+                    Specialization.setAttribute("Faculties", Specialization.getAttribute("Faculties") + i.toString() + ",")
+                    //Specialization.Faculty.push(Faculty)///***PROBLEMS
+                    if (DataDoc.getElementById("Specializations0") != null) { //all specs
+                        DataDoc.getElementById("Specializations0").setAttribute("Faculties", DataDoc.getElementById("Specializations0").getAttribute("Faculties") + i.toString() + ",")
+                    }
+                } else {
+                    error = error + "<br>Faculty: " + i + ": " + Faculty.getAttribute("Name") + ", Spec: " + Faculty.getAttribute("SC") + " Specialization not found";
+                }
+
+                var University = DataDoc.getElementById("Universities" + UniversityIds[Faculty.getAttribute("UC")])
+                if (University) {
+                    Faculty.setAttribute("University", University)
+                    University.setAttribute("Faculties", University.getAttribute("Faculties") + i.toString() + ",")
+
+                }
+
+            }
+        }
+    }
+    return error;
+}

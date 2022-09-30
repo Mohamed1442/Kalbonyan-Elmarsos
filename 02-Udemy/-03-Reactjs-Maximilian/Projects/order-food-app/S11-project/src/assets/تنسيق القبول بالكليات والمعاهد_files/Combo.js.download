@@ -1,0 +1,115 @@
+﻿
+function ClearCombo(Combo)
+{
+	var oOptions = Combo.options;
+	var i = oOptions.length-1;
+	while(i>=0)
+	{
+		oOptions.remove(i);
+		i--;
+	}
+}
+
+
+function FillCombo(Combo, DatasetId, SelectedIndex)
+{
+	var i;
+	var L = eval(ComboDataSource.getElementById(DatasetId).getAttribute("length"));
+	for (i = 0; i < L ; i++)
+	{
+		AddItem(Combo, ComboDataSource.getElementById(DatasetId+i).getAttribute("Name"), i, SelectedIndex);
+	}
+}
+
+function FillDepartmentsCombo(Combo, DatasetId, SelectedIndex,Condition)//Condition is the zone code to fill only zone departments
+{
+	var i;
+	var L = eval(ComboDataSource.getElementById(DatasetId).getAttribute("length"));
+	for(i=0; i<L; i++)
+	{
+		if(eval(ComboDataSource.getElementById(DatasetId+i).getAttribute("ZoneCode")) ==Condition)
+			AddItem(Combo, ComboDataSource.getElementById(DatasetId+i).getAttribute("Name"), i, SelectedIndex);
+	}
+}
+
+
+function AddItem(Combo, Name, Index, SelectedIndex)
+{
+
+
+	Combo.options[Combo.length]=new Option(Name,Index)
+	if(Index==SelectedIndex){
+		Combo.selectedIndex=SelectedIndex
+		}
+	
+
+}
+
+function AddItemWithOrder(Combo, Name, Index,SelectedIndex,Order)
+{
+	var t;
+	var n;
+	t = Combo.options[Order + 1].textContent
+	n = Combo.options[Order + 1].value
+}
+
+
+
+
+function SelectComboItem(Combo, Code)
+{
+	var oOptions = Combo.options;
+	var i = oOptions.length-1;
+	while(i>=0)
+	{
+		if(oOptions.item(i).value==Code)
+		{
+			Combo.selectedIndex = i;
+			return;
+		}
+		i--;
+	}
+	Combo.selectedIndex=0;
+}
+
+
+
+
+
+function GetItemNumber(DatasetId,Value)
+{
+    var i;
+    var L = eval(ComboDataSource.getElementById(DatasetId).getAttribute("length"));
+	for(i=0;i<L;i++)
+	{
+	    if (eval(ComboDataSource.getElementById(DatasetId + i).getAttribute("Code")) == Value)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+function GetItemNumber2(DatasetId, Value)//****Repeated !!
+{
+    var i;
+    var L = eval(ComboDataSource.getElementById(DatasetId).getAttribute("length"));
+    for (i = 0; i < L; i++) {
+        if (eval(ComboDataSource.getElementById(DatasetId + i).getAttribute("Code")) == Value) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+function GetItemNumber3(DatasetId, Value1, Value2)//try selected index?
+{
+    var i;
+    var L = eval(ComboDataSource.getElementById(DatasetId).getAttribute("length"));
+    for (i = 0; i < L; i++) {
+        if (eval(ComboDataSource.getElementById(DatasetId + i).getAttribute("ZoneCode")) == Value1 && eval(ComboDataSource.getElementById(DatasetId + i).getAttribute("PolicesCode")) == Value2) {
+            return i;
+        }
+    }
+    return 1;
+}

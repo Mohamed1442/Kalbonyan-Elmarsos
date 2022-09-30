@@ -1,0 +1,31 @@
+.form {
+  width: 600px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  align-items: flex-start;
+}
+
+.form label {
+  font-weight: 600;
+}
+
+.form input {
+  padding: 5px;
+  width: 100%;
+}
+
+.form button {
+  border-color: transparent;
+  padding: 5px 10px;
+  background-color: #702283;
+  color: white;
+}
+
+.form button:hover {
+  background-color: rgb(46, 5, 85);
+}

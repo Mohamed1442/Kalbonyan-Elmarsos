@@ -1,0 +1,794 @@
+
+<!-- saved from url=(0061)https://tansik.digital.gov.eg/application/ChoicesHeading.aspx -->
+<html><link type="text/css" rel="stylesheet" id="dark-mode-custom-link"><link type="text/css" rel="stylesheet" id="dark-mode-general-link"><style lang="en" type="text/css" id="dark-mode-custom-style"></style><style lang="en" type="text/css" id="dark-mode-native-style"></style><style lang="en" type="text/css" id="dark-mode-native-sheet"></style><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1256">
+	<title>اختيار الرغبات</title>
+		<script type="text/javascript">
+if(window.history.forward(1) != null)
+  window.history.forward(1);
+		</script>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">		
+		
+		<meta content="JavaScript" name="vs_defaultClientScript">
+		<meta content="http://schemas.microsoft.com/intellisense/ie5" name="vs_targetSchema">
+		
+		<script type="text/javascript" src="./ruxitagentjs_ICA2Vfgjqru_10245220704125537.js.download" data-dtconfig="rid=RID_1793044535|rpid=-1492453642|domain=digital.gov.eg|reportUrl=/Application/rb_da15e7f0-b8cb-4f37-bfc4-656bc3affa3f|app=3e8a04ed641a2f42|rcdec=1209600000|featureHash=ICA2Vfgjqru|vcv=2|rdnt=1|uxrgce=1|bp=3|srmcrv=10|cuc=hw6ez4tb|mel=100000|dpvc=1|ssv=4|lastModification=1660987172122|dtVersion=10245220704125537|srmcrl=1|tp=500,50,0,1|uxdcw=1500|agentUri=/Application/ruxitagentjs_ICA2Vfgjqru_10245220704125537.js"></script><script type="text/javascript">
+
+
+var ChoiceErrors = new Array("", "اختيار مكرر", "خطأ توزيع جغرافي", "لم يكتمل الاختيار بعد", "تخصص غير متوافر في الجامعة المحددة", "راجع اللشروط الخاصة للكلية", "اختبار قدرات ","خطأ في ترتيب المعاهد");
+var ChoiceErrorColors = new Array("white", "cyan", "pink", "ltgreen", "yellow", "red", "ltgray");
+var ChoiceErrorMessages = new Array("", "اختيار مكرر", "راجع أولوية الكليات طبقا لترتيب المجموعات الجغرافية", "لم يكتمل الاختيار بعد", "تخصص غير متوافر في الجامعة المحددة", "شروط خاصة","هذه الكلية لا تتناسب مع مجموعك وستتعرض لاستنفاد الرغبات", "لا بد من اجتياز اختبار القدرات الخاص","أدخل المعاهد التي تقع في نطاق محافظتك أولاً","المعهد أو الكلية أخذت نسبتها من تقليل الاغتراب");
+var StudentService;
+var TransferType = 1;
+var AcceptedFaculty=-1;
+var AcceptedSpecialization = -1;
+		    
+		</script>
+		<script type="text/javascript" src="./globals.js.download"></script>
+		<script type="text/javascript">
+		    var ConfigChoicesLimit =120;
+		    var ChoicesLimit ;
+		var cboChoiceNumber;
+		var cboSpecialization;
+		var cboLocation;
+
+		var Choices1Doc;
+		var Choices2Doc;
+
+		</script>
+		<script type="text/javascript" src="./Funcs.js.download"></script>
+		<script type="text/javascript" src="./validate.js.download"></script>
+		<script type="text/javascript" src="./Combo.js.download"></script>
+		<script type="text/javascript" src="./globals.js(1).download"></script>
+		<script type="text/javascript" src="./logic.js.download"></script>
+		<script type="text/javascript" src="./ChoiceEditing.js.download"> </script>
+		<script type="text/javascript" src="./data08082019.js.download"></script>
+		<script type="text/javascript" id="clientEventHandlersJS">
+<!--
+//Fill the ChoiceNumber Combobox
+		    function FillChoiceNumber() 
+		    {
+		        var i;
+		        if(StudentService=="Apply"){
+		            cboChoiceNumber = document.getElementById("ChoiceNumber");
+		            cboChoiceNumber1 = document.getElementById("ChoiceNumber1");
+		            for(i=0; i<ChoicesLimit; i++)
+		                AddItem(cboChoiceNumber, i+1, i, 0);
+		            for(i=0; i<ChoicesLimit; i++)
+		                AddItem(cboChoiceNumber1, i+1, i, 0);
+		        }
+		        if(StudentService == "Transfer"){
+		            cboChoiceNumber = document.getElementById("ChoiceNumber");
+		            for(i=0; i<ChoicesLimit; i++)
+		                AddItem(cboChoiceNumber, i+1, i, 0);
+		            cboChoiceNumber2= document.getElementById("ChoiceNumber2");
+		            for(i=0; i<ChoicesLimit; i++)
+		                AddItem(cboChoiceNumber2, i+1, i, 0);
+		        }	
+		    }
+
+
+var NothingChanged=-1;
+var SpecChanged=0;
+var LocChanged=1;
+
+
+function University_onchange() {
+    var SubjectSet = StudentData.getElementById("BasicData").getAttribute("Subjectsets");
+    FillFacultiesCombo(document.getElementById("Universities").value, SubjectSet)
+}
+
+//The specialization of a choice has been changed
+
+
+function Specialization_onchange() 
+{
+	try{
+	if(document.getElementById("Specialization").value  !="")
+		FillLocationCombo(document.getElementById("Specialization").value, -1);
+	
+	
+	}catch(e)
+		{
+		}
+}
+function TransferSpecialization_onchange() 
+{
+	try{
+	    FillLocationCombo(document.getElementById("TransferSpecialization").value, -1);	
+	}catch(e){}
+}
+
+function OnPageLoad()
+{
+	window.setTimeout("TryOnLoad()", 100);
+}
+
+function TryOnLoad()
+{
+
+    if (window.parent.frames[1].document == null)//**loading prerequisit combo.js To be Revisted**//
+	{
+		window.setTimeout("TryOnLoad()", 100);
+		return;
+    }
+	SetDataDocs();
+	ChoicesLimit = CountAvailableFaculties(ConfigChoicesLimit);
+	StudentService = CurrentStudentService();
+	cboSpecialization = document.getElementById("Specialization");
+
+	Choices1Doc= window.parent.frames[0].document
+	
+	FillChoiceNumber();
+	
+	
+	window.setTimeout("ContinueOnLoad()", 100);
+}
+
+function ContinueOnLoad(){
+    if(window.parent.frames[1].document.getElementById("Notes"+ (ChoicesLimit-1)) == null){
+		window.setTimeout("ContinueOnLoad()", 100);
+		return;
+    }
+   
+	Choices2Doc = window.parent.frames[1].document;
+	InvertUnivsCodes();
+	document.getElementById(StudentService).style.display = "block";
+	document.getElementById(StudentService+"1").style.display = "block";
+
+	switch (StudentService){
+	    case "Apply":
+	        FillLocationCombo(-1,-1);
+	        FillSpecializationCombo(-1)
+	        FillUniversitiesCombo() 
+	        break;
+	    case "Transfer":
+	        AcceptedFaculty = eval(BasicData.getAttribute("CurrentAcceptedFaculty"));
+	        if(AcceptedFaculty > 0)
+	            AcceptedSpecialization = DataDoc.getElementById("Faculties"+AcceptedFaculty).getAttribute("SC") ;
+	        else
+	        {
+	            alert("عزيزي الطالب ، لا يمكنك تسجيل رغبة تقليل اغتراب بدون ظهور نتيجتك ، راجع موقع الشكاوي")
+                window.parent.parent.location= "./Default.aspx"
+	        }
+	        var url = window.parent.parent.frames[2].document.getElementById("studentChoices").getAttribute("value");
+	        if(window.parent.parent.frames[1].document.getElementById("BasicData").getAttribute("TotalMarks2")==0)
+	            TransferType = eval(url.substr(url.indexOf("&tm=")+4,1))
+	        else
+	            TransferType =eval(window.parent.parent.frames[1].document.getElementById("BasicData").getAttribute("TotalMarks2"))
+	        switch(TransferType){
+	            case 1:
+	                RevertToTransferType(1);
+	                ShowMonazerControls();
+	                break;
+	            case 2:
+	                RevertToTransferType(2);
+	                ShowNotMonazerControls();
+	                break;
+	            case 3:
+	                RevertToTransferType(3);
+	                ShowCancelControls();
+	                break;
+	            case 4:
+	                RevertToTransferType(4);
+	                ShowEltimasControls();
+	                break;
+	            case 5:
+	                RevertToTransferType(5);
+	                ShowM3ahedControls();
+	                break;
+	            default:
+	                RevertToTransferType(1);
+	                ShowMonazerControls();
+	                break;
+	        }
+	    default:
+	        
+	        break;
+	}
+	if(getParameterByName("Certificate",eval(BasicData.getAttribute("Rank"))) == 4){
+	    toggle_visibility("HideUnivOption");
+	    document.getElementById("SpecSelectionTitle").innerHTML = "<Strong>الإختيار بالكليات والشعب</Strong>"
+	    document.getElementById("Specialization").selectedIndex = 1
+	    Specialization_onchange();
+	}
+	
+	if(getParameterByName("Certificate",eval(BasicData.getAttribute("Rank"))) == 2){
+	    toggle_visibility("HideUnivOption");
+	    document.getElementById("SpecSelectionTitle").innerHTML = "<Strong>الإختيار بالكليات والشعب</Strong>"
+	    document.getElementById("Specialization").selectedIndex = 1
+	    Specialization_onchange();
+	}
+	    
+	GotoEmptyLocation();
+	CheckUponPlot();
+}
+function ReloadAndCheck(){
+    window.parent.parent.frames[1].location = "Blank.htm"
+    window.parent.parent.frames[1].location ="studentData.aspx?a="+ Math.random();
+    window.parent.parent.document.all("choicesData").src = "./choicesData.aspx?a="+ Math.random();
+    SetDataDocs()
+    CheckUponPlot();
+}
+function SaveChoice_onclick()
+{
+    var FacultyCode;
+    switch (StudentService){
+        case "Apply":
+            if (document.getElementById("SelectbySpec").checked)//select by spec
+            {		
+                FacultyCode = document.getElementById("Location").value;
+                var Spec = document.getElementById("Specialization").value;
+                if(Spec==-1)		
+                {
+                    alert("يجب اختيار التخصص")
+                    document.getElementById("Specialization").focus();		
+                    return
+                }
+                if(FacultyCode==-1)
+                {
+                    alert("يجب اختيار الكلية")
+                    document.getElementById("Location").focus();
+                    return
+                }
+                //Specialization_onchange()
+                try {
+
+                    if (document.getElementById("Location").selectedIndex + 1 < document.getElementById("Location").length)
+                        document.getElementById("Location").selectedIndex += 1;
+                    else
+                        document.getElementById("Location").selectedIndex = 0;
+                }
+                catch (err) {
+
+                }
+            }
+            else//select by university
+            {
+                FacultyCode = document.getElementById("UniversityFacuties").value;
+                selectedUniversity = document.getElementById("Universities").value;	
+                if(eval(selectedUniversity)==-1)		
+                {
+                    alert("يجب اختيار الجامعة")
+                    document.getElementById("Universities").focus();
+                    return
+                }
+                if(eval(FacultyCode)==-1)
+                {
+                    alert("يجب اختيار الكلية")
+                    document.getElementById("UniversityFacuties").focus();
+                    return
+                }
+		
+                try {
+
+                    if (document.getElementById("UniversityFacuties").selectedIndex + 1 < document.getElementById("UniversityFacuties").length)
+                        document.getElementById("UniversityFacuties").selectedIndex += 1;
+                    else
+                        document.getElementById("UniversityFacuties").selectedIndex = 0;
+                }
+                catch (err) {
+
+                }
+            }
+            break;
+        case "Transfer":
+            FacultyCode = document.getElementById("TransferLocation").value;
+            var Spec = document.getElementById("TransferSpecialization").value;
+            if(Spec==-1)		
+            {
+                alert("يجب اختيار التخصص")
+                document.getElementById("TransferSpecialization").focus();		
+                return
+            }
+            if(FacultyCode==-1)
+            {
+                alert("يجب اختيار الكلية")
+                document.getElementById("TransferLocation").focus();
+                return
+            }
+            break;
+        default:
+            break;
+    }
+
+    var ZoneCode = BasicData.getAttribute("ZoneCode");
+    var ChoiceNumber = document.getElementById("ChoiceNumber").selectedIndex;
+	
+    if(ChoiceNumber<0)
+    {
+        alert("اختر رقم الرغبة التي تريد تعديلها");
+        document.getElementById("ChoiceNumber").select();
+    }
+    
+    ReplaceChoice(FacultyCode, ChoiceNumber,ZoneCode)
+
+    GotoEmptyLocation();
+    return true;
+}
+function InsertChoice_onclick()
+{
+    var FacultyCode;
+    FacultyCode = document.getElementById("Location").value;
+    var ZoneCode=StudentData.getElementById("BasicData").getAttribute("ZoneCode");	//Take care of special nature schools
+    var ChoiceNumber = document.getElementById("ChoiceNumber").selectedIndex;
+    switch (StudentService){
+        case "Apply":
+            var ChoiceNumber = document.getElementById("ChoiceNumber").selectedIndex;
+            if(Data.getElementById("Choices" + ChoiceNumber).getAttribute("facultycode")==-1){
+                SaveChoice_onclick();
+            }
+            else
+            {
+                
+                if (document.getElementById("SelectbySpec").checked)//select by spec
+                {
+                    var Spec = document.getElementById("Specialization").value;
+                    if(Spec==-1)		
+                    {
+                        alert("يجب اختيار التخصص")
+                        document.getElementById("Specialization").focus();		
+                        return
+                    }
+                    if(FacultyCode==-1)
+                    {
+                        alert("يجب اختيار الكلية")
+                        document.getElementById("Location").focus();
+                        return
+                    }
+                }
+                else//select by university
+                {
+                    selectedFaculty = document.getElementById("UniversityFacuties").selectedIndex - 1;
+                    selectedUniversity = document.getElementById("Universities").value;	
+                    if(selectedUniversity==-1)		
+                    {
+                        alert("يجب اختيار الجامعة")
+                        document.getElementById("Universities").focus();
+                        return
+                    }
+                    if(selectedFaculty==-1)
+                    {
+                        alert("يجب اختيار الكلية")
+                        document.getElementById("UniversityFacuties").focus();
+                        return
+                    }
+                    var SelectedFaculty = document.getElementById("UniversityFacuties").value;			
+                    FacultyCode=SelectedFaculty;
+                }
+                	
+                InsertChoiceAt(FacultyCode, ChoiceNumber,ZoneCode);
+            }
+            break;
+        case "Transfer":
+            SaveChoice_onclick();
+            break;
+        default:
+            break;
+    }
+    	
+    GotoEmptyLocation();
+		
+		 
+		
+    //document.getElementById("UniversityFacuties").selectedIndex = 0;
+		
+    return true;
+}
+
+
+function DeleteChoice_onclick()
+{
+	
+	var ZoneCode=eval(StudentData.getElementById("BasicData").getAttribute("ZoneCode"));
+	var ChoiceNumber = document.getElementById("ChoiceNumber").selectedIndex;
+	if(Data.getElementById("Choices"+(ChoiceNumber)).getAttribute("FacultyCode")==-1)
+	{
+		alert("لا يمكنك إلغاء اختيار لم يتم تحديده");
+		return;
+	}
+	
+	DeleteChoice(ChoiceNumber, ZoneCode);
+	ChoiceNumber_onchange();
+}
+
+
+function ChoiceNumber_onchange()
+{
+    document.getElementById("ChoiceNumber1").selectedIndex = document.getElementById("ChoiceNumber").selectedIndex;
+    SetSelection(document.getElementById("ChoiceNumber").value);
+
+    LoadChoice(document.getElementById("ChoiceNumber").value);
+
+    LoadUniversityChoice(document.getElementById("ChoiceNumber").value);
+}
+
+function ChoiceNumber1_onchange()
+{
+    document.getElementById("ChoiceNumber").selectedIndex= document.getElementById("ChoiceNumber1").selectedIndex
+    SetSelection(document.getElementById("ChoiceNumber").value);
+
+    LoadChoice(document.getElementById("ChoiceNumber").value);
+    LoadUniversityChoice(document.getElementById("ChoiceNumber").value);
+}
+function ChoiceNumber2_onchange()
+{
+    document.getElementById("ChoiceNumber").selectedIndex= document.getElementById("ChoiceNumber2").selectedIndex
+    SetSelection(document.getElementById("ChoiceNumber").value);
+
+    LoadChoice(document.getElementById("ChoiceNumber").value);
+    LoadUniversityChoice(document.getElementById("ChoiceNumber").value);
+}
+
+function HideSelectByUniversitycontrols()
+{
+    document.getElementById("Apply1").style.display = "block";
+    document.getElementById("Apply2").style.display = "none";
+}
+
+function HideSelectBySpec()
+{
+	document.getElementById("Apply1").style.display="none";
+	document.getElementById("Apply2").style.display="block";
+}
+
+function HideShowSpecs(Control)
+{
+    document.getElementById("Specialization").style.visibility=Control;
+    document.getElementById("Location").style.visibility=Control;
+}
+
+function ShowMonazerControls(){
+    var MonazerList = {};
+    var FoundMonazer = 0;
+    try{
+        var MonazerList;
+	var MonazerListArray ;
+	MonazerList= BasicData.getAttribute("RulesData").split("#")[5];
+	MonazerListArray = MonazerList.split(',');
+    }
+    catch(e){
+        //**reject transfer type**/
+        alert("عزيزي الطالب : غير متاح لك تقليل اغتراب مناظر ، لأنك مقبول في أقرب كلية إليك في النطاق ")
+        RevertToTransferType(2);
+        ShowNotMonazerControls();
+        return;
+    }
+    
+    var MonazerSpecialization = DataDoc.getElementById("Faculties" + AcceptedFaculty).getAttribute("SC")
+    for(var i=0;i<MonazerListArray.length;i++){
+        if (parseInt(MonazerListArray[i], 10) > 0 && parseInt(MonazerListArray[i]) != parseInt(BasicData.getAttribute("CurrentAcceptedFaculty"))) {
+            FoundMonazer += 1;
+            MonazerSpecialization = DataDoc.getElementById("Faculties" + eval(MonazerListArray[i])).getAttribute("SC")
+        }
+    }
+    if (FoundMonazer == 0){
+        alert("عزيزي الطالب : غير متاح لك تقليل اغتراب مناظر ، لأنك مقبول في أقرب كلية إليك في النطاق ")
+        RevertToTransferType(2);
+        ShowNotMonazerControls();
+        return;
+    }
+           
+
+ 
+    if(TransferType != 1 ){
+        if(Choices(0).getAttribute("FacultyCode") !=-1){
+            if(confirm("سيتم مسح الرغبة الحالية والبدء في إدخال رغبة تقليل اغتراب مناظر في قائمة فارغة. هل تريد الاستمرار؟"))
+            {
+                DeleteChoice(0,BasicData.getAttribute("ZoneCode"));
+                TransferType = 1;
+            }else{
+                RevertToTransferType(TransferType);
+                return;
+            }
+        }
+    }
+    document.getElementById("Transfer1").style.display="block";
+    document.getElementById("Buttons").style.display="block";
+    window.parent.document.getElementById('EditChoices').setAttribute('rows', '150,*');
+    FillTransferSpecializationCombo1("Monazer", MonazerSpecialization)
+    FillLocationComboWithFaculties(document.getElementById("TransferSpecialization").value,MonazerList )
+    TransferType= 1;
+    window.parent.parent.frames[1].document.getElementById("BasicData").setAttribute("TotalMarks2",TransferType);
+    
+}
+function ShowNotMonazerControls(){
+   
+    if(TransferType != 2 ){
+        if(Choices(0).getAttribute("FacultyCode") !=-1){
+            if(confirm("سيتم مسح  الرغبة الحالية والبدء في إدخال رغبة تقليل اغتراب غير مناظر في قائمة فارغة. هل تريد الاستمرار؟"))
+            {
+                DeleteChoice(0,BasicData.getAttribute("ZoneCode"));
+                TransferType = 2;
+            }else{
+                RevertToTransferType(TransferType);
+                return;
+            }
+        }
+    }
+    window.parent.document.getElementById('EditChoices').setAttribute('rows', '150,*');
+    document.getElementById("Transfer1").style.display="block";
+    document.getElementById("Buttons").style.display="block";
+    FillTransferSpecializationCombo1("NotMonazer",AcceptedSpecialization)
+    FillLocationCombo(-1,-1)
+    TransferType = 2 ;
+    window.parent.parent.frames[1].document.getElementById("BasicData").setAttribute("TotalMarks2",TransferType);
+
+}
+function ShowM3ahedControls() {
+
+    if (TransferType != 5) {
+        if (Choices(0).getAttribute("FacultyCode") != -1) {
+            if (confirm("سيتم مسح  الرغبة الحالية والبدء في إدخال رغبة تحويل إلي معهد في قائمة فارغة. هل تريد الاستمرار؟")) {
+                DeleteChoice(0, BasicData.getAttribute("ZoneCode"));
+                TransferType = 2;
+            } else {
+                RevertToTransferType(TransferType);
+                return;
+            }
+        }
+    }
+    window.parent.document.getElementById('EditChoices').setAttribute('rows', '150,*');
+    document.getElementById("Transfer1").style.display = "block";
+    document.getElementById("Buttons").style.display = "block";
+    FillTransferSpecializationCombo1("M3ahed", AcceptedSpecialization)
+    FillLocationCombo(-1, -1)
+    TransferType = 5;
+    window.parent.parent.frames[1].document.getElementById("BasicData").setAttribute("TotalMarks2", TransferType);
+
+}
+function ShowCancelControls(){
+    if(TransferType != 3 ){
+        if(Choices(0).getAttribute("FacultyCode") !=-1){
+            if(confirm("سيتم مسح الرغبة الحالية و يجب عليك المتابعة لتسجيل إيصال إلغاء الطلب . هل تريد الاستمرار؟"))
+            {
+                DeleteChoice(0,BasicData.getAttribute("ZoneCode"));
+            }else{
+                RevertToTransferType(TransferType);
+                return;
+            }
+        }
+
+    }
+    window.parent.document.getElementById('EditChoices').setAttribute('rows', '35,*');
+    InsertCancelChoice();
+    TransferType = 3;
+    document.getElementById("Transfer1").style.display="none";
+    document.getElementById("Buttons").style.display="none";
+    window.parent.parent.frames[1].document.getElementById("BasicData").setAttribute("TotalMarks2",TransferType);
+}
+function ShowEltimasControls(){
+  
+    if(TransferType !=4 ){
+        if(Choices(0).getAttribute("FacultyCode") !=-1){
+            if(confirm("سيتم مسح  الرغبة الحالية والبدء في إدخال رغبة تقليل اغتراب غير مناظر في قائمة فارغة. هل تريد الاستمرار؟"))
+            {
+                DeleteChoice(0,BasicData.getAttribute("ZoneCode"));
+            }else{
+                RevertToTransferType(TransferType);
+                return;
+            }
+        }
+    }
+    window.parent.document.getElementById('EditChoices').setAttribute('rows', '150,*');
+    document.getElementById("Transfer1").style.display="block";
+    document.getElementById("Buttons").style.display="block";
+    FillTransferSpecializationCombo1("Eltimas",AcceptedSpecialization)
+    FillLocationCombo(-1,-1)
+    TransferType = 4 ;
+    window.parent.parent.frames[1].document.getElementById("BasicData").setAttribute("TotalMarks2",TransferType);
+    
+}
+
+function RevertToTransferType(_tType) {
+   
+    switch (_tType){
+        case 1:
+            document.getElementById("Monazer").checked=true;
+            document.getElementById("NotMonazer").checked = false;
+            document.getElementById("M3ahed").checked = false;
+            document.getElementById("Cancel").checked=false;
+            //document.getElementById("Eltimas").checked=false;
+            TransferType=1;
+    break;
+        case 2:
+            document.getElementById("Monazer").checked=false;
+            document.getElementById("NotMonazer").checked = true;
+            document.getElementById("M3ahed").checked = false;
+            document.getElementById("Cancel").checked=false;
+            //document.getElementById("Eltimas").checked=false;
+            TransferType=2;
+    break;
+        case 3:
+            document.getElementById("Monazer").checked=false;
+            document.getElementById("NotMonazer").checked = false;
+            document.getElementById("M3ahed").checked = false;
+            //document.getElementById("Eltimas").checked=false;
+            document.getElementById("Cancel").checked=true;
+            TransferType=3;
+            break;
+        case 4:
+            document.getElementById("Monazer").checked=false;
+            document.getElementById("NotMonazer").checked = false;
+            document.getElementById("M3ahed").checked = false;
+            document.getElementById("Cancel").checked=false;
+            //document.getElementById("Eltimas").checked=true;
+            TransferType=4;
+            break;
+        case 5:
+            document.getElementById("Monazer").checked = false;
+            document.getElementById("NotMonazer").checked = false;
+            document.getElementById("M3ahed").checked = true;
+            document.getElementById("Cancel").checked = false;
+            //document.getElementById("Eltimas").checked = false;
+            TransferType = 5;
+            break;
+        default:
+
+    }
+    window.parent.parent.frames[1].document.getElementById("BasicData").setAttribute("TotalMarks2",TransferType);
+    
+}
+//-->
+        </script>
+		<link href="./Styles.css" type="text/css" rel="stylesheet">
+	    <style type="text/css">
+            .style3
+            {
+                width: 78px;
+            }
+            #InsertChoice
+            {
+                width: 84px;
+            }
+            #ModifyChoice
+            {
+                width: 84px;
+            }
+            .style4
+            {
+                width: 94px;
+            }
+            .style5
+            {
+                height: 33px;
+            }
+            #ReloadAndCheck {
+                height: 26px;
+            }
+            .auto-style1 {
+                height: 37px;
+            }
+        </style>
+	</head>
+	<body dir="rtl" bottommargin="0" bgcolor="#a5dcff" leftmargin="0" topmargin="0" onload="OnPageLoad();" rightmargin="0" class="vsc-initialized">
+        <form name="form1" method="post" action="https://tansik.digital.gov.eg/application/ChoicesHeading.aspx" id="form1">
+<div>
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMjA0MjMxNTU1OGRkcDjdxpSRgBO/vPYky+W1KfXz1Ps=">
+</div>
+
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="499BE1E3">
+</div>
+        <table id="Options" cellspacing="4" cellpadding="1" align="center" border="0" style="WIDTH: 680px; HEIGHT: 40px">
+            <tbody><tr id="Apply" style="display: block;">
+                <td valign="top" align="center" width="50%">
+                    <input id="SelectbySpec" onclick="HideSelectByUniversitycontrols();" type="radio" checked="" value="V1" name="R1"><p id="SpecSelectionTitle" style="display: inline"><strong>الإختيار&nbsp;بالتخصصات و كل المعاهد&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></p><p id="HideUnivOption" style="display:inline;"><input id="SelectByUniversity" onclick="HideSelectBySpec();" type="radio" value="V2" name="R1">
+                  <strong>  الإختيار&nbsp;بالجامعات والمعاهد الجغرافية&nbsp; </strong></p>
+                </td>
+            </tr>
+            <tr id="Transfer" style="display: none;">
+                <td valign="top" align="center" width="50%"><strong>
+                    <input id="Monazer" onselect="ShowMonazerControls();" onclick="ShowMonazerControls();" type="radio" checked="" value="V1" name="R2"> تقليل إغتراب مناظر&nbsp;
+                                                <input id="NotMonazer" onselect="ShowNotMonazerControls();" onclick="ShowNotMonazerControls();" type="radio" value="V2" name="R2">
+                    تقليل إغتراب غير مناظر &nbsp;&nbsp;
+                     <input id="M3ahed" onselect="ShowM3ahedControls();" onclick="ShowM3ahedControls();" type="radio" value="V5" name="R2">
+                    معاهد&nbsp;&nbsp;&nbsp;
+                    <!-- <input id="Eltimas" onselect="ShowEltimasControls();" onclick="ShowEltimasControls();" type="radio" value="V4" name="R2">
+                    التماس&nbsp;&nbsp;&nbsp;-->
+                                     <input id="Cancel" onselect="ShowCancelControls();" onclick="ShowCancelControls();" type="radio" value="V3" name="R2">
+
+                    إلغاء الطلب </strong><strong></strong>
+                </td>
+            </tr>
+            <tr id="Apply1" style="display: block;">
+                <td>
+                    <table id="Table2" cellspacing="1" width="570" align="center" border="1" name="Table2">
+                        <tbody><tr>
+                            <td colspan="1" rowspan="1" class="auto-style1">
+                                <p align="center"><strong>م</strong></p>
+                            </td>
+                            <td id="" class="auto-style1"><strong><b>التخصص</b></strong></td>
+                            <td width="270" class="auto-style1">
+                                <select id="Specialization" onchange="Specialization_onchange();" name="Specialization" style="WIDTH: 400px">
+                                    
+                                <option value="-1">-----------------اختر التخصص أولاً-----------------</option><option value="43">الجامعات التكنولوجية تكنولوجيا الخدمات الفندقية والسياحية</option><option value="40">الجامعات التكنولوجية تكنولوجيا العلوم الصحية</option><option value="94">الجامعات التكنولوجية كلية تكنولوجيا الصناعة والطاقة</option><option value="76">كلية آثار</option><option value="23">كلية آداب</option><option value="85">كلية آداب انتساب موجه</option><option value="80">كلية أقتصاد منزلى</option><option value="50">كلية ألسن</option><option value="77">كلية إعلام</option><option value="14">كلية الادارة ونظم المعلومات</option><option value="26">كلية السياسة والاقتصاد و الدراسات الاقتصادية والعلوم السياسية</option><option value="37">كلية المصرية الصينية للتكنولوجيا</option><option value="17">كلية تجارة</option><option value="84">كلية تجارة انتساب موجه</option><option value="21">كلية تربية</option><option value="8">كلية تربية (تعليم ابتدائي)</option><option value="31">كلية تربية (طفولة مبكرة)</option><option value="29">كلية تربية فنية</option><option value="35">كلية تربية موسيقية</option><option value="19">كلية تربية نوعية</option><option value="13">كلية تربية نوعية فنية</option><option value="18">كلية تربية نوعية موسيقية</option><option value="24">كلية تربية(طفولة)</option><option value="96">كلية تكنولوجيا العلوم الصحية التطبيقية</option><option value="32">كلية تكنولوجيا صناعة السكر والصناعات التكاملية</option><option value="38">كلية تكنولوجيا وتنمية</option><option value="15">كلية تمريض</option><option value="82">كلية ثروة سمكية</option><option value="22">كلية حاسبات ومعلومات</option><option value="12">كلية حقوق</option><option value="83">كلية حقوق انتساب موجه</option><option value="36">كلية خدمة اجتماعية</option><option value="39">كلية خدمة اجتماعية انتساب موجه</option><option value="9">كلية دار العلوم</option><option value="20">كلية دار العلوم انتساب موجه</option><option value="6">كلية زراعة</option><option value="30">كلية سياحة وفنادق</option><option value="11">كلية سياحة وفنادق تعليم تبادلي</option><option value="7">كلية طب بيطري</option><option value="1">كلية علوم</option><option value="54">كلية علوم الارض ببنى سويف</option><option value="89">كلية علوم الملاحة وتكنولوجيا الفضاء</option><option value="95">كلية علوم ذوى الاحتياجات الخاصة</option><option value="34">كلية فنون تطبيقية</option><option value="27">كلية فنون جميلة</option><option value="47">معهد البصريات</option><option value="66">معهد ترميم اثار</option><option value="61">معهد سكرتارية</option><option value="81">معهد سياحة وفنادق</option><option value="99">معهد عالي إدارة أعمال - علوم إدارية</option><option value="92">معهد عالي إعلام وتكنولوجيا صحافة</option><option value="60">معهد عالي حاسب ونظم</option><option value="44">معهد عالي خدمة اجتماعية</option><option value="91">معهد عالي دراسات أدبية</option><option value="42">معهد عالي زراعي</option><option value="93">معهد عالي علوم حاسب</option><option value="78">معهد عالي لغات</option><option value="51">معهد عالي محاسبة - تسويق- تجارة</option><option value="59">معهد فنون تطبيقية</option><option value="57">معهد فنى تجاري</option><option value="63">معهد فنى تمريض</option><option value="87">معهد فنى تمريض وعلوم صحية  وبصريات وترميم اثار بمصروفات</option><option value="56">معهد فنى رى و صرف ومساحة</option><option value="69">معهد فنى صحي</option><option value="46">معهد فنى صناعي</option><option value="62">معهد فنى فنادق</option><option value="55">معهد فني منشآت بحرية</option><option value="58">معهد متوسط خدمة اجتماعية</option></select></td>
+                        </tr>
+                        <tr>
+                            <td valign="top">
+                                <p align="center">
+                                    <select id="ChoiceNumber" onchange="ChoiceNumber_onchange();" name="ChoiceNumber"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option><option value="10">11</option><option value="11">12</option><option value="12">13</option><option value="13">14</option><option value="14">15</option><option value="15">16</option><option value="16">17</option><option value="17">18</option><option value="18">19</option><option value="19">20</option><option value="20">21</option><option value="21">22</option><option value="22">23</option><option value="23">24</option><option value="24">25</option><option value="25">26</option><option value="26">27</option><option value="27">28</option><option value="28">29</option><option value="29">30</option><option value="30">31</option><option value="31">32</option><option value="32">33</option><option value="33">34</option><option value="34">35</option><option value="35">36</option><option value="36">37</option><option value="37">38</option><option value="38">39</option><option value="39">40</option><option value="40">41</option><option value="41">42</option><option value="42">43</option><option value="43">44</option><option value="44">45</option><option value="45">46</option><option value="46">47</option><option value="47">48</option><option value="48">49</option><option value="49">50</option><option value="50">51</option><option value="51">52</option><option value="52">53</option><option value="53">54</option><option value="54">55</option><option value="55">56</option><option value="56">57</option><option value="57">58</option><option value="58">59</option><option value="59">60</option><option value="60">61</option><option value="61">62</option><option value="62">63</option><option value="63">64</option><option value="64">65</option><option value="65">66</option><option value="66">67</option><option value="67">68</option><option value="68">69</option><option value="69">70</option><option value="70">71</option><option value="71">72</option><option value="72">73</option><option value="73">74</option><option value="74">75</option></select>
+                                </p>
+                            </td>
+                            <td valign="top" class="style4">&nbsp;<strong>الكلية-المعهد</strong></td>
+                            <td valign="top">
+                                <select id="Location" name="Location" style="WIDTH: 400px">
+                                    
+                                <option value="-1">------------------مكان غير محدد-------------------</option><option value="112">(أ)حقوق الإسكندرية</option><option value="412">(ب)حقوق طنطا</option><option value="1111">(ب)حقوق كفرالشيخ</option><option value="396">(ج)حقوق أسوان</option><option value="312">(ج)حقوق أسيوط</option><option value="612">(ج)حقوق الزقازيق</option><option value="759">(ج)حقوق الفيوم</option><option value="12">(ج)حقوق القاهرة</option><option value="512">(ج)حقوق المنصورة</option><option value="712">(ج)حقوق المنوفية بشبين الكوم</option><option value="300">(ج)حقوق المنيا</option><option value="742">(ج)حقوق بنها</option><option value="842">(ج)حقوق بني سويف</option><option value="227">(ج)حقوق جنوب الوادي</option><option value="160">(ج)حقوق حلوان</option><option value="950">(ج)حقوق دمياط</option><option value="93">(ج)حقوق سوهاج</option><option value="212">(ج)حقوق عين شمس</option><option value="439">(ج)حقوق مدينة السادات</option></select>
+                            </td>
+                        </tr>
+                    </tbody></table>
+                </td>
+            </tr>
+            <tr id="Apply2" style="display: none;">
+                <td>
+                    <table id="Table3" cellspacing="1" width="570" align="center" border="1" name="Table3">
+                        <tbody><tr>
+                            <td valign="top" colspan="1" rowspan="1">
+                                <p align="center"><strong>م</strong></p>
+                            </td>
+                            <td valign="top"><strong>الجامعة</strong></td>
+                            <td valign="top">
+                                <select id="Universities" onchange="University_onchange();" name="Universities" style="WIDTH: 400px">
+                                    <option value="-1" selected="">-------------------اختر الجامعة-------------------</option>
+                                <option value="1">(أ)جامعة الإسكندرية</option><option value="17">(ب)جامعة دمنهور</option><option value="5">(ب)جامعة طنطا</option><option value="12">(ب)جامعة كفر الشيخ</option><option value="47">جامعة 6 أكتوبر التكنولوجية</option><option value="21">جامعة أسوان</option><option value="3">جامعة أسيوط</option><option value="40">جامعة الاقصر</option><option value="43">جامعة الدلتا التكنولوجية بقويسنا</option><option value="7">جامعة الزقازيق</option><option value="11">جامعة السويس</option><option value="23">جامعة العريش</option><option value="14">جامعة الفيوم</option><option value="0">جامعة القاهرة</option><option value="45">جامعة القاهرة التكنولوجية</option><option value="6">جامعة المنصورة</option><option value="10">جامعة المنوفية</option><option value="9">جامعة المنيا</option><option value="42">جامعة الوادي الجديد</option><option value="46">جامعة برج العرب التكنولوجية</option><option value="13">جامعة بنها</option><option value="15">جامعة بني سويف</option><option value="44">جامعة بني سويف التكنولوجيه</option><option value="18">جامعة بور سعيد</option><option value="4">جامعة جنوب الوادي</option><option value="8">جامعة حلوان</option><option value="19">جامعة دمياط</option><option value="48">جامعة سمنود التكنولوجية </option><option value="16">جامعة سوهاج</option><option value="49">جامعة شرق بورسعيد التكنولوجية</option><option value="50">جامعة طيبة التكنولوجية</option><option value="2">جامعة عين شمس</option><option value="22">جامعة قناة السويس</option><option value="20">جامعة مدينة السادات</option><option value="41">جامعة مطروح</option><option value="37">فني فنادق</option><option value="24">ك.ت. فني صناعى</option><option value="28">معهد ترميم اثار</option><option value="33">معهد عالى سياحة وفنادق</option><option value="26">معهد عالى هندسة</option><option value="29">معهد عالي إعلام وتكنولوجيا صحافة</option><option value="30">معهد عالي تعاون زراعي</option><option value="31">معهد عالي حاسب ونظم المعلومات</option><option value="32">معهد عالي خدمة اجتماعية</option><option value="27">معهد عالي علوم إدارية - محاسبة</option><option value="34">معهد عالي علوم حاسب</option><option value="35">معهد عالي لغات</option><option value="38">معهد فنى لمواد البناء</option><option value="25">معهد فني تجارى</option><option value="39">معهد فني منشآت بحرية</option><option value="36">معهد متوسط خدمة اجتماعية</option></select></td>
+                        </tr>
+                        <tr>
+                            <td valign="top">
+                                <select id="ChoiceNumber1" onchange="ChoiceNumber1_onchange();" name="ChoiceNumber1"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option><option value="10">11</option><option value="11">12</option><option value="12">13</option><option value="13">14</option><option value="14">15</option><option value="15">16</option><option value="16">17</option><option value="17">18</option><option value="18">19</option><option value="19">20</option><option value="20">21</option><option value="21">22</option><option value="22">23</option><option value="23">24</option><option value="24">25</option><option value="25">26</option><option value="26">27</option><option value="27">28</option><option value="28">29</option><option value="29">30</option><option value="30">31</option><option value="31">32</option><option value="32">33</option><option value="33">34</option><option value="34">35</option><option value="35">36</option><option value="36">37</option><option value="37">38</option><option value="38">39</option><option value="39">40</option><option value="40">41</option><option value="41">42</option><option value="42">43</option><option value="43">44</option><option value="44">45</option><option value="45">46</option><option value="46">47</option><option value="47">48</option><option value="48">49</option><option value="49">50</option><option value="50">51</option><option value="51">52</option><option value="52">53</option><option value="53">54</option><option value="54">55</option><option value="55">56</option><option value="56">57</option><option value="57">58</option><option value="58">59</option><option value="59">60</option><option value="60">61</option><option value="61">62</option><option value="62">63</option><option value="63">64</option><option value="64">65</option><option value="65">66</option><option value="66">67</option><option value="67">68</option><option value="68">69</option><option value="69">70</option><option value="70">71</option><option value="71">72</option><option value="72">73</option><option value="73">74</option><option value="74">75</option></select></td>
+                            <td valign="top" class="style4"><strong>الكلية -المعهد</strong></td>
+                            <td valign="top">
+                                <select id="UniversityFacuties" name="UniversityFacuties" style="WIDTH: 400px">
+                                    <option value="-1" selected="">-------------------اختر الكلية--------------------</option>
+                                </select></td>
+                        </tr>
+                    </tbody></table>
+                </td>
+            </tr>
+            <tr id="Transfer1" style="display: none;">
+                <td>
+                    <table id="Table4" cellspacing="1" width="570" align="center" border="1" name="Table2">
+                        <tbody><tr>
+                            <td colspan="1" rowspan="1">
+                                <p align="center"><strong>م</strong></p>
+                            </td>
+                            <td id="TD1"><strong><b>التخصص</b></strong></td>
+                            <td width="270">
+                                <select id="TransferSpecialization" onchange="TransferSpecialization_onchange();" name="Specialization" style="WIDTH: 400px">
+                                    <option selected="">-----------------اختر التخصص اولا-----------------</option>
+                                </select></td>
+                        </tr>
+                        <tr>
+                            <td valign="top">
+                                <p align="center">
+                                    <select id="ChoiceNumber2" onchange="ChoiceNumber2_onchange();" name="ChoiceNumber"></select></p>
+                            </td>
+                            <td valign="top" class="style4">&nbsp;<strong>الكلية-المعهد</strong></td>
+                            <td valign="top">
+                                <select id="TransferLocation" name="Location" style="WIDTH: 400px">
+                                    <option selected="">-------------------اختر التخصص اولا---------------</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody></table>
+                </td>
+                </tr>
+                <tr id="Buttons" style="width:570px">
+                    <td valign="top" align="center" colspan="3" style="width:570px">
+                        <input id="InsertChoice" title="إدخال الرغبة عند الترتيب المحدد" onclick="return InsertChoice_onclick();" type="button" size="20" value="إضافة" name="InsertChoice">
+                        <input id="ModifyChoice" title="استبدال الرغبة مكان الترتيب المحدد" onclick="return SaveChoice_onclick();" type="button" value="تعديل" name="ModifyChoice">&nbsp;
+                        
+                    </td>
+                </tr>
+        </tbody></table>
+        
+    
+	    </form>
+        
+    
+	
+
+
+</body></html>
