@@ -6,13 +6,14 @@
 
 ## Demo
 <br>
+[live-demo](https://d2rwdxfq0b4i5u.cloudfront.net/login)
 ## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![App Screenshot](https://drive.google.com/file/d/1r4lmKQP8qdz6c-BJR6WGS8UFpgI2iuQp/view?usp=sharing)
 
 ## Features
 
--
--
--
--
+- Add notes
+- Login and Signup
+- Upload files
+- Payment
