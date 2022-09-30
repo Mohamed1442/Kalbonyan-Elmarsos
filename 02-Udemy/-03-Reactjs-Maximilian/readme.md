@@ -42,7 +42,7 @@
 ### Section 12 Project
 
 - [Project-code](./Projects/S12-project)
-- [Live Demo](toggle-mohamedmagdy.netlify.app)
+- [Live Demo](https://toggle-mohamedmagdy.netlify.app/)
 
 ### Section 13 Project
 
