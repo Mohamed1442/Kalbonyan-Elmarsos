@@ -72,7 +72,7 @@
 ### Redux Counter(S18)
 
 - [Project-code](./Projects/redux-counter)
-- [Live Demo]()
+- [Live Demo](https://auth-mohamedmagdy.netlify.app/)
 
 ### Redux Cart(S19)
 
