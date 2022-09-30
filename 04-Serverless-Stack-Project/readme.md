@@ -6,10 +6,13 @@
 
 ## Demo
 <br>
-[live-demo](https://d2rwdxfq0b4i5u.cloudfront.net/login)
+[live-demo](https://d2rwdxfq0b4i5u.cloudfront.net)
 ## Screenshots
 
-![App Screenshot](https://drive.google.com/file/d/1r4lmKQP8qdz6c-BJR6WGS8UFpgI2iuQp/view?usp=sharing)
+![App Screenshot](/1.png)
+![App Screenshot](/1.png)
+![App Screenshot](/1.png)
+![App Screenshot](/1.png)
 
 ## Features
 
